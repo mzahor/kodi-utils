@@ -1,7 +1,12 @@
 import unittest
 import json
-from ..clients import FsToLink, FsToClient
-from . import sample_fsto_response
+
+from unittest.mock import patch
+
+from .sample_fsto_response import sample_fsto_response
+from ..clients import FsToLink, FsToClient, FsToContent
+from .. import clients
+
 
 # Can be changed as fs.to server regenerates them (I'm not sure about this)
 VALID_FS_TO_LINK = 'http://fs.to/video/serials/view/i4ELKIFfC0foVMg0jCV3kdi?play&file=8932523'
@@ -9,6 +14,7 @@ INVALID_FS_TO_LINK1 = 'http://fs.to/video/serials/view/i4ELKIFfC0foVMg0jCV3kdi'
 INVALID_FS_TO_LINK2 = 'http://fs.to/video/serials/i4ELKIFfC0foVMg0jCV3kdi'
 INVALID_FS_TO_LINK3 = 'http://fs.to/video/serials/i4ELKIFfC0foVMg0jCV3kdi'
 VALID_FS_TO_URL = 'http://fs.to/video/serials/view_iframe/i4ELKIFfC0foVMg0jCV3kdi?play&isStartRequest=true&file=8932523'
+
 
 class TestFsToLink(unittest.TestCase):
     def get_link(self):
@@ -51,11 +57,27 @@ class TestFsToClient(unittest.TestCase):
         url = self.client.build_url(self.link)
         self.assertEqual(url, VALID_FS_TO_URL)
 
-    def test_load_data(self):
+    @patch.object(clients, 'requests')
+    def test_load_data(self, requests_mock):
+        requests_mock.get.return_value.status_code = 200
         data = self.client.load_data(self.link)
         self.assertIsNotNone(data)
 
-    def test_fsto_response(self):
+    @patch.object(clients, 'requests')
+    def test_load_data_error(self, requests_mock):
+        requests_mock.get.return_value.status_code = 404
+        with self.assertRaises(Exception) as cm:
+            data = self.client.load_data(self.link)
+
+    @patch.object(clients, 'requests')
+    def test_get_content(self, requests_mock):
+        requests_mock.get.return_value.status_code = 200
+        requests_mock.get.return_value.json.return_value = sample_fsto_response
+        content = self.client.get_content(self.link)
+        self.assertEqual(len(content.files), 3)
+
+    @unittest.skip('api test')
+    def test_fsto_api_response(self):
         # this test should fail when fs.to api changes
         data = self.client.load_data(self.link)
         self.assertTrue('actionsData' in data)
@@ -66,7 +88,7 @@ class TestFsToClient(unittest.TestCase):
         self.assertTrue('languages' in data['actionsData'])
         self.assertTrue('coverData' in data)
 
-    @unittest.skip("dev")
+    @unittest.skip('dev')
     def test_load_data_pretty(self):
         # use this test to debug fs.to api
         data = self.client.load_data(self.link)
@@ -74,8 +96,25 @@ class TestFsToClient(unittest.TestCase):
 
 
 class TestFsToContent(unittest.TestCase):
-    pass
+    def setUp(self):
+        self.content = FsToContent(sample_fsto_response)
+    
+    def test_files(self):
+        self.assertEqual(len(self.content.files), 3)
 
+    def test_files_file(self):
+        file1 = self.content.files[0]
+        file2 = self.content.files[1]
+        
+        self.assertEqual(file1.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
+        self.assertEqual(file2.file_name, 'Aftermath.s01e02.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
+
+        self.assertEqual(file1.url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file2.url, '/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392.mp4')
+
+        self.assertEqual(file1.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file2.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392_hd.mp4')
+        
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,7 +1,11 @@
 import re
+import os
+from urllib.parse import urlparse
+
 import requests
 
-class FsToLink():
+
+class FsToLink:
     regex_pattern = \
         r'http\:\/\/fs\.to\/video\/(?P<content_type>(films)|(serials))\/view\/(?P<id>[a-zA-Z0-9]+)\?play\&file=(?P<file>\d+)\s*$'
     url_regex = re.compile(regex_pattern)
@@ -19,24 +23,56 @@ class FsToLink():
         return self.url_regex.match(url) is not None
 
 
-class FsToClient():
+class FsToFile:
+    def __init__(self, data):
+        self.url = data['url']
+        self.hd_url = self.get_hd_url(self.url)
+        self.file_name = data['file_name']
+        self.quality = data['quality']
+        self.language = data['language']
+
+    def get_hd_url(self, url):
+        path = urlparse(url).path
+        name, ext = os.path.splitext(path)
+        return '{name}_hd{ext}'.format(**locals())
+
+
+class FsToContent:
+    '''
+    Fs.To response wrapper
+    '''
+    def __init__(self, data):
+        actionsData = data['actionsData']
+        files = actionsData['files']
+        file = actionsData['file']
+        self.files = [FsToFile(f) for f in files]
+
+
+class FsToClient:
+    '''
+    Link in method params should be an instance of FsToLink
+    '''
     headers = {
         'X-Requested-With': 'XMLHttpRequest',
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/53.0.2785.143 Chrome/53.0.2785.143 Safari/537.36',
     }
 
-    def build_url(self, fstolink):
+    def build_url(self, link):
         url = 'http://fs.to/video/{content_type}/view_iframe/{id}?play&isStartRequest=true&file={file}'.format(
-            content_type=fstolink.content_type,
-            id=fstolink.id,
-            file=fstolink.file
+            content_type=link.content_type,
+            id=link.id,
+            file=link.file
         )
         return url
 
-    def load_data(self, fstolink):
-        url = self.build_url(fstolink)
+    def load_data(self, link):
+        url = self.build_url(link)
         response = requests.get(url, headers=self.headers)
         if response.status_code != 200:
             raise Exception('Unable to load data from FS.TO', response)
-        json = response.json()
-        return json
+        data = response.json()
+        return data
+
+    def get_content(self, link):
+        data = self.load_data(link)
+        return FsToContent(data)
