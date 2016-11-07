@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "Play2Kodi",
+  "version": "0.1",
+
+  "description": "Plays fs.to url to kodi",
+
+  "browser_action": {
+    "default_icon": "play2kodi.png"
+  },
+
+  "author": "Marian Zagoruiko",
+  "background": {
+    "scripts": ["play2kodi.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "http://*/"
+  ]
+}
