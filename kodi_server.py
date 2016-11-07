@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import logging
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from kodi_utils.clients import FsToClient
 from kodipydent import Kodi
 
@@ -19,6 +19,12 @@ def play():
     file_url = content.file.hd_url
     kodi = Kodi('192.168.0.105')
     resp = kodi.Player.Open(item={'file': file_url})
+
+
+@app.route('/', methods=['GET'])
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify(status='running')
 
 
 if __name__ == '__main__':
