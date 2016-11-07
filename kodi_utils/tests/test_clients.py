@@ -106,6 +106,9 @@ class TestFsToContent(unittest.TestCase):
         file1 = self.content.files[0]
         file2 = self.content.files[1]
         
+        self.assertEqual(file1.id, '8932523')
+        self.assertEqual(file2.id, '8934414')
+
         self.assertEqual(file1.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
         self.assertEqual(file2.file_name, 'Aftermath.s01e02.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
 
@@ -114,7 +117,13 @@ class TestFsToContent(unittest.TestCase):
 
         self.assertEqual(file1.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
         self.assertEqual(file2.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392_hd.mp4')
-        
+    
+    def test_file(self):
+        file = self.content.file
+        self.assertEqual(file.id, '8932523')
+        self.assertEqual(file.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
+        self.assertEqual(file.url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,12 +5,17 @@ from urllib.parse import urlparse
 import requests
 
 
+FSTO_HOST = 'http://fs.to'
+
+
 class FsToLink:
     regex_pattern = \
         r'http\:\/\/fs\.to\/video\/(?P<content_type>(films)|(serials))\/view\/(?P<id>[a-zA-Z0-9]+)\?play\&file=(?P<file>\d+)\s*$'
     url_regex = re.compile(regex_pattern)
 
     def __init__(self, url):
+        if isinstance(url, FsToLink):
+            return url
         self.url = url
         if not self.url_is_valid(url):
             raise Exception('Not valid fs.to url: ' + url)
@@ -25,8 +30,9 @@ class FsToLink:
 
 class FsToFile:
     def __init__(self, data):
-        self.url = data['url']
-        self.hd_url = self.get_hd_url(self.url)
+        self.id = data['id']
+        self.url = FSTO_HOST + data['url']
+        self.hd_url = FSTO_HOST + self.get_hd_url(self.url)
         self.file_name = data['file_name']
         self.quality = data['quality']
         self.language = data['language']
@@ -46,6 +52,10 @@ class FsToContent:
         files = actionsData['files']
         file = actionsData['file']
         self.files = [FsToFile(f) for f in files]
+        try:
+            self.file = next(filter(lambda x: x.id == file['id'], self.files))
+        except StopIteration:
+            raise Exception('No main file found in files collection.', file, files)
 
 
 class FsToClient:
@@ -74,5 +84,6 @@ class FsToClient:
         return data
 
     def get_content(self, link):
+        link = FsToLink(link)
         data = self.load_data(link)
         return FsToContent(data)
