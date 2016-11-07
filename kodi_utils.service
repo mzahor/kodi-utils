@@ -1,0 +1,11 @@
+[Unit]
+Description=Kodi Utils Service
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/home/osmc/kodi-utils/server.sh
+User=osmc
+
+[Install]
+WantedBy=multi-user.target
