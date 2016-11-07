@@ -9,13 +9,13 @@ from kodi_utils.clients import FsToClient
 
 def main():
     parser = ArgumentParser()
+    parser.add_argument('--hd', metavar='N', type=bool, default=True, help='Play in HD quality. True by default.')
     parser.add_argument('url')
     args = parser.parse_args()
-    url = args.url
-
+    
     client = FsToClient()
-    content = client.get_content(url)
-    file_url = content.file.hd_url
+    content = client.get_content(args.url)
+    file_url = content.file.hd_url if args.hd else content.file.url
     
     kodi = Kodi('192.168.0.105')
     resp = kodi.Player.Open(item={'file': file_url})
