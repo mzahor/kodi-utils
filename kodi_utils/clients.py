@@ -14,8 +14,6 @@ class FsToLink:
     url_regex = re.compile(regex_pattern)
 
     def __init__(self, url):
-        if isinstance(url, FsToLink):
-            return url
         self.url = url
         if not self.url_is_valid(url):
             raise Exception('Not valid fs.to url: ' + url)
@@ -83,7 +81,7 @@ class FsToClient:
         data = response.json()
         return data
 
-    def get_content(self, link):
-        link = FsToLink(link)
+    def get_content(self, url):
+        link = FsToLink(url)
         data = self.load_data(link)
         return FsToContent(data)

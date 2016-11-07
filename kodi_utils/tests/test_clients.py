@@ -73,7 +73,7 @@ class TestFsToClient(unittest.TestCase):
     def test_get_content(self, requests_mock):
         requests_mock.get.return_value.status_code = 200
         requests_mock.get.return_value.json.return_value = sample_fsto_response
-        content = self.client.get_content(self.link)
+        content = self.client.get_content(VALID_FS_TO_LINK)
         self.assertEqual(len(content.files), 3)
 
     @unittest.skip('api test')
@@ -112,18 +112,18 @@ class TestFsToContent(unittest.TestCase):
         self.assertEqual(file1.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
         self.assertEqual(file2.file_name, 'Aftermath.s01e02.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
 
-        self.assertEqual(file1.url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
-        self.assertEqual(file2.url, '/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file1.url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file2.url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392.mp4')
 
-        self.assertEqual(file1.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
-        self.assertEqual(file2.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file1.hd_url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file2.hd_url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392_hd.mp4')
     
     def test_file(self):
         file = self.content.file
         self.assertEqual(file.id, '8932523')
         self.assertEqual(file.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
-        self.assertEqual(file.url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
-        self.assertEqual(file.hd_url, '/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file.url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file.hd_url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
 
 if __name__ == '__main__':
     unittest.main()
