@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import logging
+import configparser
 from flask import Flask, request, jsonify
 from kodi_utils.clients import FsToClient
 from kodipydent import Kodi
@@ -8,6 +9,11 @@ logger = logging.getLogger('fsto_dataloader')
 handler = logging.StreamHandler()
 logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
+
+config = configparser.ConfigParser()
+config.read('settings.ini')
+auth = config['auth']
+
 app = Flask(__name__)
 
 @app.route('/player', methods=['POST'])
@@ -17,7 +23,7 @@ def play():
     client = FsToClient()
     content = client.get_content(url)
     file_url = content.file.hd_url
-    kodi = Kodi('192.168.0.105')
+    kodi = Kodi('192.168.0.105', username=auth['username'], password=auth['password'])
     resp = kodi.Player.Open(item={'file': file_url})
 
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import os 
 import sys
 from argparse import ArgumentParser
@@ -17,7 +17,7 @@ def main():
     content = client.get_content(args.url)
     file_url = content.file.hd_url if args.hd else content.file.url
     
-    kodi = Kodi('192.168.0.105')
+    kodi = Kodi('192.168.0.105', username='mzahor', password='takingoverme')
     resp = kodi.Player.Open(item={'file': file_url})
     print(resp)
 

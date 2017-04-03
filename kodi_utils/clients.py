@@ -5,18 +5,18 @@ from urllib.parse import urlparse
 import requests
 
 
-FSTO_HOST = 'http://fs.to'
+FSTO_HOST = 'http://fs.life'
 
 
 class FsToLink:
     regex_pattern = \
-        r'http\:\/\/fs\.to\/video\/(?P<content_type>(films)|(serials))\/view\/(?P<id>[a-zA-Z0-9]+)\?play\&file=(?P<file>\d+)(\&quality\=\d+)?\s*$'
+        r'http\:\/\/fs\.life\/video\/(?P<content_type>(films)|(serials)|(cartoonserials))\/view\/(?P<id>[a-zA-Z0-9]+)\?play\&file=(?P<file>\d+)(\&quality\=\d+)?\s*$'
     url_regex = re.compile(regex_pattern)
 
     def __init__(self, url):
         self.url = url
         if not self.url_is_valid(url):
-            raise Exception('Not valid fs.to url: ' + url)
+            raise Exception('Not valid fs.life url: ' + url)
         match  = self.url_regex.match(self.url)
         self.id = match.group('id')
         self.file = match.group('file')
@@ -66,7 +66,7 @@ class FsToClient:
     }
 
     def build_url(self, link):
-        url = 'http://fs.to/video/{content_type}/view_iframe/{id}?play&isStartRequest=true&file={file}'.format(
+        url = 'http://fs.life/video/{content_type}/view_iframe/{id}?play&isStartRequest=true&file={file}'.format(
             content_type=link.content_type,
             id=link.id,
             file=link.file
