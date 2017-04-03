@@ -13,6 +13,7 @@ logger.setLevel(logging.DEBUG)
 config = configparser.ConfigParser()
 config.read('settings.ini')
 auth = config['auth']
+connection = config['connection']
 
 app = Flask(__name__)
 
@@ -23,7 +24,7 @@ def play():
     client = FsToClient()
     content = client.get_content(url)
     file_url = content.file.hd_url
-    kodi = Kodi('192.168.0.105', username=auth['username'], password=auth['password'])
+    kodi = Kodi(connection['server'], username=auth['username'], password=auth['password'])
     resp = kodi.Player.Open(item={'file': file_url})
 
 
