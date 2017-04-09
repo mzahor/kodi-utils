@@ -10,7 +10,7 @@ FSTO_HOST = 'http://fs.life'
 
 class FsToLink:
     regex_pattern = \
-        r'http\:\/\/fs\.life\/video\/(?P<content_type>(films)|(serials)|(cartoonserials))\/view\/(?P<id>[a-zA-Z0-9]+)\?play\&file=(?P<file>\d+)(\&quality\=\d+)?\s*$'
+        r'http\:\/\/fs\.life\/video\/(?P<content_type>(films)|(serials)|(cartoonserials)|(cartoons))\/view\/(?P<id>[a-zA-Z0-9]+)\?play\&file=(?P<file>\d+)(\&quality\=\d+)?\s*$'
     url_regex = re.compile(regex_pattern)
 
     def __init__(self, url):

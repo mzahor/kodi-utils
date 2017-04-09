@@ -8,17 +8,17 @@ from ..clients import FsToLink, FsToClient, FsToContent
 from .. import clients
 
 
-# Can be changed as fs.to server regenerates them (I'm not sure about this)
-VALID_FS_TO_LINK = 'http://fs.to/video/serials/view/i4ELKIFfC0foVMg0jCV3kdi?play&file=8932523'
-INVALID_FS_TO_LINK1 = 'http://fs.to/video/serials/view/i4ELKIFfC0foVMg0jCV3kdi'
-INVALID_FS_TO_LINK2 = 'http://fs.to/video/serials/i4ELKIFfC0foVMg0jCV3kdi'
-INVALID_FS_TO_LINK3 = 'http://fs.to/video/serials/i4ELKIFfC0foVMg0jCV3kdi'
-VALID_FS_TO_URL = 'http://fs.to/video/serials/view_iframe/i4ELKIFfC0foVMg0jCV3kdi?play&isStartRequest=true&file=8932523'
+# Can be changed as fs.life server regenerates them (I'm not sure about this)
+VALID_FS_LIFE_LINK = 'http://fs.life/video/serials/view/i4ELKIFfC0foVMg0jCV3kdi?play&file=8932523'
+INVALID_FS_LIFE_LINK1 = 'http://fs.life/video/serials/view/i4ELKIFfC0foVMg0jCV3kdi'
+INVALID_FS_LIFE_LINK2 = 'http://fs.life/video/serials/i4ELKIFfC0foVMg0jCV3kdi'
+INVALID_FS_LIFE_LINK3 = 'http://fs.life/video/serials/i4ELKIFfC0foVMg0jCV3kdi'
+VALID_FS_TO_URL = 'http://fs.life/video/serials/view_iframe/i4ELKIFfC0foVMg0jCV3kdi?play&isStartRequest=true&file=8932523'
 
 
 class TestFsToLink(unittest.TestCase):
     def get_link(self):
-        client = FsToLink(VALID_FS_TO_LINK)
+        client = FsToLink(VALID_FS_LIFE_LINK)
         return client
 
     def test_ctor_valid(self):
@@ -27,13 +27,13 @@ class TestFsToLink(unittest.TestCase):
 
     def test_ctor_not_valid(self):
         with self.assertRaises(Exception) as cm:
-            client = FsToLink(INVALID_FS_TO_LINK1)
+            client = FsToLink(INVALID_FS_LIFE_LINK1)
 
         with self.assertRaises(Exception) as cm:
-            client = FsToLink(INVALID_FS_TO_LINK2)
+            client = FsToLink(INVALID_FS_LIFE_LINK2)
 
         with self.assertRaises(Exception) as cm:
-            client = FsToLink(INVALID_FS_TO_LINK3)
+            client = FsToLink(INVALID_FS_LIFE_LINK3)
 
     def test_id(self):
         client = self.get_link()
@@ -51,7 +51,7 @@ class TestFsToLink(unittest.TestCase):
 class TestFsToClient(unittest.TestCase):
     def setUp(self):
         self.client = FsToClient()
-        self.link = FsToLink(VALID_FS_TO_LINK)
+        self.link = FsToLink(VALID_FS_LIFE_LINK)
 
     def test_build_url(self):
         url = self.client.build_url(self.link)
@@ -73,12 +73,12 @@ class TestFsToClient(unittest.TestCase):
     def test_get_content(self, requests_mock):
         requests_mock.get.return_value.status_code = 200
         requests_mock.get.return_value.json.return_value = sample_fsto_response
-        content = self.client.get_content(VALID_FS_TO_LINK)
+        content = self.client.get_content(VALID_FS_LIFE_LINK)
         self.assertEqual(len(content.files), 3)
 
     @unittest.skip('api test')
     def test_fsto_api_response(self):
-        # this test should fail when fs.to api changes
+        # this test should fail when fs.life api changes
         data = self.client.load_data(self.link)
         self.assertTrue('actionsData' in data)
         self.assertTrue('file' in data['actionsData'])
@@ -90,7 +90,7 @@ class TestFsToClient(unittest.TestCase):
 
     @unittest.skip('dev')
     def test_load_data_pretty(self):
-        # use this test to debug fs.to api
+        # use this test to debug fs.life api
         data = self.client.load_data(self.link)
         print(json.dumps(data, sort_keys=True, indent=4))
 
@@ -112,18 +112,18 @@ class TestFsToContent(unittest.TestCase):
         self.assertEqual(file1.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
         self.assertEqual(file2.file_name, 'Aftermath.s01e02.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
 
-        self.assertEqual(file1.url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
-        self.assertEqual(file2.url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file1.url, 'http://fs.life/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file2.url, 'http://fs.life/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392.mp4')
 
-        self.assertEqual(file1.hd_url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
-        self.assertEqual(file2.hd_url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file1.hd_url, 'http://fs.life/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file2.hd_url, 'http://fs.life/get/playvideo/1bab2a0ljx4b04hw748lwsh5grg8xopqwa5sy8.0.1765758616.974127405.1478358392_hd.mp4')
     
     def test_file(self):
         file = self.content.file
         self.assertEqual(file.id, '8932523')
         self.assertEqual(file.file_name, 'Aftermath.s01e01.HD1080p.WEB-DL.Rus.Eng.BaibaKo.mkv')
-        self.assertEqual(file.url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
-        self.assertEqual(file.hd_url, 'http://fs.to/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
+        self.assertEqual(file.url, 'http://fs.life/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392.mp4')
+        self.assertEqual(file.hd_url, 'http://fs.life/get/playvideo/1bab2a0ljx4b04hw748lfiahzrci5bh9g15rkg.0.1765758616.974127405.1478358392_hd.mp4')
 
 if __name__ == '__main__':
     unittest.main()

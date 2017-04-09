@@ -1,4 +1,4 @@
-sample_fsto_response = \
+sample_fslife_response = \
 {
     "actionsData": {
         "dontChangeUserData": None,
